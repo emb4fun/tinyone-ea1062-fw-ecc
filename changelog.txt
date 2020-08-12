@@ -1,0 +1,7 @@
+
+Changelog of the TinyONE Server for the Embedded Artists iMX RT1062 Developer's Kit.
+The TLS functionality was implemented with the help of mbedTLS.
+
+
+= Version 1.03, 12.08.2020
+   * Initial public release with TLS functionality.
