@@ -1,4 +1,4 @@
-# Readme for TinyONE
+# README for TinyONE
 TinyONE is the implementation of a project which is based on several building blocks. The result is a DHCP and SNTP server which can be used for testing other projects. For example, in an enterprise environment it is difficult to quickly change the DHCP or SNTP server if these functions are to be tested in your own project. For this reason the project TinyONE was created. 
 
 The TLS functionality was implemented with the help of mbedTLS.
