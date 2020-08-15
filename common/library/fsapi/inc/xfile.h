@@ -34,6 +34,7 @@
 *  History:
 *
 *  17.10.2015  mifi  First Version.
+*  15.08.2020  mifi  Added ZLIB support
 **************************************************************************/
 #if !defined(__XFILE_H__)
 #define __XFILE_H__
@@ -53,16 +54,14 @@
 
 #ifdef _MSC_VER
 typedef DWORD  uint32_t;   
+typedef BYTE   uint8_t;   
 #endif
 
 #define XFILE_HEADER_MAGIC_1     0x4C494658
 #define XFILE_HEADER_MAGIC_2     0x49465845
-#define XFILE_HEADER_SIZEVER     0x00400002
-
-#define XFILE_HEADER_SIG_SIZE    128
-#define XFILE_HEADER_NAME_SIZE   20
-
+#define XFILE_HEADER_SIZEVER     ((((uint32_t)sizeof(XFILE_HEADER)) << 16) | 0x0003)
 #define XFILE_SIZE_OF_CRC32      sizeof(uint32_t)   
+#define XFILE_HEADER_NAME_SIZE   20
 
 //typedef struct __attribute__((__packed__)) _xfile_header_
 typedef struct _xfile_header_
@@ -77,14 +76,9 @@ typedef struct _xfile_header_
    uint32_t dDataCRC32;
    uint8_t   DataName[XFILE_HEADER_NAME_SIZE];
    uint32_t dDataVersion;
-   
-#if 0   
-   uint32_t dSigCurveHashSize;
-   uint8_t   Signature[XFILE_HEADER_SIG_SIZE];
-#else
-   uint32_t dReserve[1];   
-#endif   
-   
+   uint32_t dDataCompSize;
+   uint32_t dDataCompCRC32;
+   uint32_t dReserve[3];   
    uint32_t dHeaderCRC32;
 } XFILE_HEADER;
 

@@ -60,7 +60,6 @@
  </Watch4>
  <Files>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="586" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../src/main.c" selected="1" top="566" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="403" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../common/library/tal_ea1062/cpu/nxp/imxrt1060/src/talcpu.c" selected="0" top="387" codecName="Default"/>
  </Files>
  <ARMCrossStudioWindow activeProject="tinyone-ea1062" fileDialogDefaultFilter="*.c" autoConnectTarget="J-Link" buildConfiguration="SDRAM Boot Release" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="D:/Projekte/Embedded/Tiny/tinyone-ea1062/common/library/mbedtls/library" debugSearchPath="" autoConnectCapabilities="3711"/>
 </session>

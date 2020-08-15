@@ -34,6 +34,7 @@
 *  History:
 *
 *  29.10.2016  mifi  First Version.
+*  15.08.2020  mifi  Added ZLIB support
 **************************************************************************/
 #if !defined(__FS_XFILE_H__)
 #define __FS_XFILE_H__
@@ -64,7 +65,7 @@ void     xfile_Init (void);
 
 int      xfile_Check (uint8_t *pImage, uint32_t ImageSize);
 
-int      xfile_Mount (uint8_t *pBuffer, uint32_t Size);
+uint8_t *xfile_Mount (uint8_t *pBuffer, uint32_t Size);
 void     xfile_UnMount (void);
 
 char    *xfile_GetName (void);

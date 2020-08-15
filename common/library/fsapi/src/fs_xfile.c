@@ -34,6 +34,7 @@
 *  History:
 *
 *  29.10.2016  mifi  First Version.
+*  15.08.2020  mifi  Added ZLIB support
 **************************************************************************/
 #define __FS_XFILE_C__
 
@@ -49,6 +50,7 @@
 
 #include "xfile.h"
 #include "adler32.h"
+#include "zlib.h"
 
 /*=======================================================================*/
 /*  All Structures and Common Constants                                  */
@@ -378,16 +380,37 @@ int xfile_Check (uint8_t *pImage, uint32_t ImageSize)
       CRC32 = adler32(ADLER_START_VALUE, (uint8_t*)pHeader, sizeof(XFILE_HEADER) - XFILE_SIZE_OF_CRC32);
       if (CRC32 == pHeader->dHeaderCRC32)
       {
-         /* Check xfile data CRC32 */
-         CRC32 = adler32(ADLER_START_VALUE, (uint8_t*)&pImage[sizeof(XFILE_HEADER)], pHeader->dDataTotalSize);
-         if (CRC32 == pHeader->dDataCRC32)
+         /* Check for compressed data */
+         if ((0 == pHeader->dDataCompSize) && (0 == pHeader->dDataCompCRC32))
          {
-            nErr = 0;
+            /* No compressed data */
+            
+            /* Check xfile data CRC32 */
+            CRC32 = adler32(ADLER_START_VALUE, (uint8_t*)&pImage[sizeof(XFILE_HEADER)], pHeader->dDataTotalSize);
+            if (CRC32 == pHeader->dDataCRC32)
+            {
+               nErr = 0;
+            }
+            else
+            {
+               nErr = XFILE_ERROR_CRC;
+            }
          }
          else
          {
-            nErr = XFILE_ERROR_CRC;
-         }
+            /* Compressed data */
+         
+            /* Check xfile compressed CRC32 */
+            CRC32 = adler32(ADLER_START_VALUE, (uint8_t*)&pImage[sizeof(XFILE_HEADER)], pHeader->dDataCompSize);
+            if (CRC32 == pHeader->dDataCompCRC32)
+            {
+               nErr = 0;
+            }
+            else
+            {
+               nErr = XFILE_ERROR_CRC;
+            }
+         }            
       }
       else
       {
@@ -403,15 +426,18 @@ int xfile_Check (uint8_t *pImage, uint32_t ImageSize)
 /*                                                                       */
 /*  Mount the "xfile" buffer.                                            */
 /*                                                                       */
-/*  In    : pBuffer, Size                                                */
+/*  In    : pImage, Size                                                 */
 /*  Out   : none                                                         */
-/*  Return: 0 on success, -1 otherwise.                                  */
+/*  Return: pBuffer on success, NULL otherwise.                          */
 /*************************************************************************/
-int xfile_Mount (uint8_t *pImage, uint32_t ImageSize)
+uint8_t *xfile_Mount (uint8_t *pImage, uint32_t ImageSize)
 {
-   int            rc = -1;
    XFILE_HEADER *pHeader;
    uint32_t       CRC32;
+   uint8_t      *pBuffer = NULL;
+   uint8_t      *pNewBuffer;
+   uint32_t      dNewBufferSize;
+   int           nRet;
    
    (void)ImageSize;
    
@@ -429,21 +455,62 @@ int xfile_Mount (uint8_t *pImage, uint32_t ImageSize)
       {
          pDir         = (XFILE_FAT_ENTRY*)(pImage + sizeof(XFILE_HEADER)); /*lint !e826*/
          FileTime     = (time_t)pHeader->dDataCreationTime;
-         pImageBuffer = (uint8_t*)pDir;
+         pDataName    = (char*)pHeader->DataName; 
+         dDataVersion = pHeader->dDataVersion;
       
-         /* Check xfile data CRC32 */
-         CRC32 = adler32(ADLER_START_VALUE, (uint8_t*)pDir, pHeader->dDataTotalSize);
-         if (CRC32 == pHeader->dDataCRC32)
+         /* Check for compressed data */
+         if ((0 == pHeader->dDataCompSize) && (0 == pHeader->dDataCompCRC32))
          {
-            rc = 0;
-            
-            pDataName    = (char*)pHeader->DataName; 
-            dDataVersion = pHeader->dDataVersion;
+            /* No compressed data */
+      
+            /* Check xfile data CRC32 */
+            CRC32 = adler32(ADLER_START_VALUE, (uint8_t*)pDir, pHeader->dDataTotalSize);
+            if (CRC32 == pHeader->dDataCRC32)
+            {
+               pImageBuffer = (uint8_t*)pDir;
+               pBuffer      = pImage;
+            }
          }
+         else
+         {
+            /* Compressed data */
+            
+            /* Check xfile compressed CRC32 */
+            CRC32 = adler32(ADLER_START_VALUE, (uint8_t*)pDir, pHeader->dDataCompSize);
+            if (CRC32 == pHeader->dDataCompCRC32)
+            {
+               /* Uncompress data */
+               dNewBufferSize = pHeader->dDataTotalSize;
+               pNewBuffer     = (uint8_t*)xmalloc(XM_ID_HEAP, pHeader->dDataTotalSize);
+               if (pNewBuffer != NULL)
+               {
+                  nRet = uncompress(pNewBuffer, (uLongf*)&dNewBufferSize, (const uint8_t*)pDir, pHeader->dDataCompSize);
+                  if (0 == nRet) /* Uncompress OK */
+                  {
+                     /* Check uncompressed CRC */
+                     CRC32 = adler32(ADLER_START_VALUE, (uint8_t*)pNewBuffer, pHeader->dDataTotalSize);
+                     if (CRC32 == pHeader->dDataCRC32)
+                     {
+                        pDir         = (XFILE_FAT_ENTRY*)pNewBuffer;   /*lint !e826*/
+                        pImageBuffer = pNewBuffer;
+                        pBuffer      = pNewBuffer;
+                     }
+                     else
+                     {
+                        xfree(pNewBuffer);
+                     }
+                  }
+                  else
+                  {
+                     xfree(pNewBuffer);
+                  }
+               }
+            }
+         }            
       }
    }       
    
-   return(rc);
+   return(pBuffer);
 } /* xfile_Mount */
 
 /*************************************************************************/
@@ -497,6 +564,29 @@ uint32_t xfile_GetVersion (void)
 {
    return(dDataVersion);
 } /* xfile_GetVersion */
+
+/*************************************************************************/
+/*  zlib_adler32                                                         */
+/*                                                                       */
+/*  Return the CRC for the given buffer.                                 */
+/*                                                                       */
+/*  In    : adler, buf, len                                              */
+/*  Out   : none                                                         */
+/*  Return: adler                                                        */
+/*************************************************************************/
+uLong zlib_adler32 (uLong adler, const Bytef *buf, uInt len)
+{
+   if (NULL == buf)
+   {
+      adler = ADLER_START_VALUE;
+   }
+   else
+   {
+      adler = adler32(adler, buf, len); 
+   }
+   
+   return(adler);
+} /* zlib_adler32 */
 
 /*** EOF ***/
 

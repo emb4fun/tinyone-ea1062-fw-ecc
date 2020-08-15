@@ -34,6 +34,7 @@
 *  History:
 *
 *  31.05.2019  mifi  First Version.
+*  15.08.2020  mifi  Added support for compressed web image data.
 **************************************************************************/
 #define __FS_C__
 
@@ -145,7 +146,8 @@ static void ReadBuffer (int fd, uint8_t *pBuffer, uint32_t Size)
 /*************************************************************************/
 static int Mount (int fd)
 {
-   int nErr = -1;
+   int      nErr = -1;
+   uint8_t *pBuffer;
    
    WebImageSize = (uint32_t)_filelength(fd);
    pWebImageBuffer = (uint8_t*)xmalloc(XM_ID_HEAP, WebImageSize);
@@ -153,7 +155,18 @@ static int Mount (int fd)
    {
       ReadBuffer(fd, pWebImageBuffer, WebImageSize);
       
-      nErr = xfile_Mount(pWebImageBuffer, WebImageSize);
+      pBuffer = xfile_Mount(pWebImageBuffer, WebImageSize);
+      if (pBuffer != NULL)
+      {
+         nErr = 0;
+         
+         /* Check if the "new buffer" is the correct one */
+         if (pBuffer != pWebImageBuffer)
+         {
+            xfree(pWebImageBuffer);    /* Delete old buffer */
+            pWebImageBuffer = pBuffer; /* Use new buffer */
+         }
+      }            
    }
    
    return(nErr);
@@ -184,8 +197,8 @@ static void UnMount (void)
 /*************************************************************************/
 static void SDMountCallback (void)
 {
-   int rc = 0;
-   int fd;
+   int       fd;
+   uint8_t *pBuffer;
    
 #if 1 /* New functionality */      
    uint8_t bIndex = 1;
@@ -220,9 +233,16 @@ static void SDMountCallback (void)
          /* Read "xfile" filesystem */
          ReadBuffer(fd, pWebImageBuffer, WebImageSize);
          
-         rc = xfile_Mount(pWebImageBuffer, WebImageSize);
-         if (0 == rc)
+         pBuffer = xfile_Mount(pWebImageBuffer, WebImageSize);
+         if (pBuffer != NULL)
          {
+            /* Check if the "new buffer" is the correct one */
+            if (pBuffer != pWebImageBuffer)
+            {
+               xfree(pWebImageBuffer);    /* Delete old buffer */
+               pWebImageBuffer = pBuffer; /* Use new buffer */
+            }
+         
             /*
              * "xfile" filesystem available.
              */

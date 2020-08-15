@@ -21,8 +21,8 @@
       arm_target_interface_type="SWD"
       build_intermediate_directory="$(Configuration)"
       build_output_directory="$(Configuration)"
-      c_preprocessor_definitions="INITIALIZE_STACK;OSCILLATOR_CLOCK_FREQUENCY=24000000;CPU_MIMXRT1062CVL5A;MIMXRT1062xxxxx;__MIMXRT1062_FAMILY;ARM_MATH_CM7;USE_BOARD_EA1062;RTOS_TCTS;SKIP_SYSCLK_INIT;FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL=1;FSL_FEATURE_PHYKSZ8081_USE_RMII50M_MODE"
-      c_user_include_directories="..\\incprj;..\\common\\inc;..\\common\\library\\tcts\\inc;..\\common\\library\\tal_ea1062\\board\\ea1062\\inc;..\\common\\library\\tal_ea1062\\core\\inc;..\\common\\library\\tal_ea1062\\cpu\\nxp\\imxrt1060\\sdk\\v270\\cmsis\\core;..\\common\\library\\tal_ea1062\\cpu\\nxp\\imxrt1060\\sdk\\v270\\cmsis\\device;..\\common\\library\\tal_ea1062\\cpu\\nxp\\imxrt1060\\sdk\\v270\\drivers;..\\common\\library\\tal_ea1062\\cpu\\nxp\\imxrt1060\\inc;..\\common\\library\\tal_ea1062\\cpu\\nxp\\imxrt1060\\sdk\\v270\\sdmmc\\inc;..\\common\\library\\tal_ea1062\\cpu\\nxp\\imxrt1060\\sdk\\v270\\sdmmc\\port;..\\common\\library\\ipapi\\inc;..\\common\\library\\ipapi\\phy;..\\common\\library\\ipweb\\inc;..\\common\\library\\lwip\\src\\include;..\\common\\library\\lwip\\src\\include\\ipv4;..\\common\\library\\lwip_port\\dev;..\\common\\library\\lwip_port\\os;..\\common\\library\\uhttp\\inc;..\\common\\library\\uhttp\\addon\\inc;..\\common\\library\\fsapi\\inc;..\\common\\library\\fatfs\\src;..\\common\\library\\adler32;..\\common\\library\\minini\\dev;..\\common\\library\\mbedtls\\include;..\\common\\library\\mbedtls\\include\\mbedtls;..\\inc"
+      c_preprocessor_definitions="INITIALIZE_STACK;OSCILLATOR_CLOCK_FREQUENCY=24000000;CPU_MIMXRT1062CVL5A;MIMXRT1062xxxxx;__MIMXRT1062_FAMILY;ARM_MATH_CM7;USE_BOARD_EA1062;RTOS_TCTS;NO_GZIP;SKIP_SYSCLK_INIT;FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL=1;FSL_FEATURE_PHYKSZ8081_USE_RMII50M_MODE"
+      c_user_include_directories="..\\incprj;..\\common\\inc;..\\common\\library\\tcts\\inc;..\\common\\library\\tal_ea1062\\board\\ea1062\\inc;..\\common\\library\\tal_ea1062\\core\\inc;..\\common\\library\\tal_ea1062\\cpu\\nxp\\imxrt1060\\sdk\\v270\\cmsis\\core;..\\common\\library\\tal_ea1062\\cpu\\nxp\\imxrt1060\\sdk\\v270\\cmsis\\device;..\\common\\library\\tal_ea1062\\cpu\\nxp\\imxrt1060\\sdk\\v270\\drivers;..\\common\\library\\tal_ea1062\\cpu\\nxp\\imxrt1060\\inc;..\\common\\library\\tal_ea1062\\cpu\\nxp\\imxrt1060\\sdk\\v270\\sdmmc\\inc;..\\common\\library\\tal_ea1062\\cpu\\nxp\\imxrt1060\\sdk\\v270\\sdmmc\\port;..\\common\\library\\ipapi\\inc;..\\common\\library\\ipapi\\phy;..\\common\\library\\ipweb\\inc;..\\common\\library\\lwip\\src\\include;..\\common\\library\\lwip\\src\\include\\ipv4;..\\common\\library\\lwip_port\\dev;..\\common\\library\\lwip_port\\os;..\\common\\library\\uhttp\\inc;..\\common\\library\\uhttp\\addon\\inc;..\\common\\library\\fsapi\\inc;..\\common\\library\\fatfs\\src;..\\common\\library\\adler32;..\\common\\library\\minini\\dev;..\\common\\library\\mbedtls\\include;..\\common\\library\\mbedtls\\include\\mbedtls;..\\common\\library\\zlib;..\\inc"
       debug_register_definition_file="$(ProjectDir)/MIMXRT1062_Registers.xml"
       debug_target_connection="J-Link"
       gcc_entry_point="reset_handler"
@@ -256,6 +256,17 @@
             <file file_name="../common/library/mbedtls/library/ecp_curves.c" />
             <file file_name="../common/library/mbedtls/library/ecdsa.c" />
             <file file_name="../common/library/mbedtls/library/asn1write.c" />
+          </folder>
+          <folder Name="zlib">
+            <file file_name="../common/library/zlib/compress.c" />
+            <file file_name="../common/library/zlib/deflate.c" />
+            <file file_name="../common/library/zlib/infback.c" />
+            <file file_name="../common/library/zlib/inffast.c" />
+            <file file_name="../common/library/zlib/inflate.c" />
+            <file file_name="../common/library/zlib/inftrees.c" />
+            <file file_name="../common/library/zlib/trees.c" />
+            <file file_name="../common/library/zlib/uncompr.c" />
+            <file file_name="../common/library/zlib/zutil.c" />
           </folder>
         </folder>
         <folder Name="src">

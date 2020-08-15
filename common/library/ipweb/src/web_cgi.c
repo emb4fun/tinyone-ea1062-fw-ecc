@@ -1214,6 +1214,7 @@ static int Upload (HTTPD_SESSION *hs)
    if (NULL == UploadBuffer)
    {
       UploadBuffer = xmalloc(XM_ID_HEAP, WEB_UPLOAD_BUFFER_SIZE);   
+      if (NULL == UploadBuffer) return(-1);
    }
       
    memset(&Info, 0, sizeof(web_upload_t));
@@ -1262,6 +1263,9 @@ static int Upload (HTTPD_SESSION *hs)
    xfree(Info.pType);
    xfree(Info.pRedirOK);
    xfree(Info.pRedirERR);
+
+   xfree(UploadBuffer);
+   UploadBuffer = NULL;
 
    return(0);
 } /* Upload */

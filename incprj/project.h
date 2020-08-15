@@ -54,7 +54,7 @@
 
 #define PROJECT_VER_MAJOR     1
 #define PROJECT_VER_MINOR_1   0
-#define PROJECT_VER_MINOR_2   3
+#define PROJECT_VER_MINOR_2   4
 
 #define PROJECT_VER_NUMBER    ((PROJECT_VER_MAJOR * 100) + (PROJECT_VER_MINOR_1 * 10) + PROJECT_VER_MINOR_2)
 
@@ -127,14 +127,14 @@
 /**************************************************************/
 
 #define TASK_SD0FS_PRIORITY               30
-#define TASK_SD0FS_STK_SIZE               1280
+#define TASK_SD0FS_STK_SIZE               1536
 
 
 /*
  * Define delay times of the tasks
  */
-#define TASK_START_DELAY_MS         1000
-#define TASK_TERM_DELAY_MS          100
+#define TASK_START_DELAY_MS   1000
+#define TASK_TERM_DELAY_MS    100
 #define TASK_LED_DELAY_MS     500
 
 
